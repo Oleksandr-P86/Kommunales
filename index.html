@@ -42,6 +42,12 @@ input {
   border:1px solid #ddd;
   font-size:18px;
   font-weight:500;
+  background:#fff;
+}
+
+.tariff {
+  background:#f0f5ff;
+  border:1px solid #4f8cff;
 }
 
 .row { display:flex; gap:10px; }
@@ -88,7 +94,7 @@ button {
 </div>
 
 <div class="label">Тариф день</div>
-<input id="tariff_day" value="4.32" required inputmode="decimal">
+<input id="tariff_day" class="tariff" value="4.32" required inputmode="decimal">
 
 <div class="label">Ніч</div>
 <div class="row">
@@ -97,7 +103,7 @@ button {
 </div>
 
 <div class="label">Тариф ніч</div>
-<input id="tariff_night" value="2.16" required inputmode="decimal">
+<input id="tariff_night" class="tariff" value="2.16" required inputmode="decimal">
 </div>
 
 <div class="card">
@@ -109,10 +115,10 @@ button {
 </div>
 
 <div class="label">Газ</div>
-<input id="gas_price" value="8" required inputmode="decimal">
+<input id="gas_price" class="tariff" value="8" required inputmode="decimal">
 
 <div class="label">Доставка</div>
-<input id="gas_delivery" value="2.03" required inputmode="decimal">
+<input id="gas_delivery" class="tariff" value="2.03" required inputmode="decimal">
 </div>
 
 <div class="card">
@@ -124,10 +130,10 @@ button {
 </div>
 
 <div class="label">Тариф</div>
-<input id="water_tariff" value="26" required inputmode="decimal">
+<input id="water_tariff" class="tariff" value="26" required inputmode="decimal">
 
 <div class="label">Абонплата</div>
-<input id="water_sub" value="58" required inputmode="decimal">
+<input id="water_sub" class="tariff" value="58" required inputmode="decimal">
 </div>
 
 <div class="card">
@@ -162,7 +168,9 @@ function validate(){
       i.style.border = "2px solid red";
       ok = false;
     } else {
-      i.style.border = "1px solid #ddd";
+      i.style.border = i.classList.contains("tariff")
+        ? "1px solid #4f8cff"
+        : "1px solid #ddd";
     }
   });
   return ok;
@@ -243,14 +251,10 @@ function copyForTenants(){
 
   const text = `Комуналка за ${month}:
 
-⚡ Світло:
-${el_day}×${t_day}+${el_night}×${t_night}=${el_total.toFixed(0)}/2= ${(el_total/2).toFixed(0)} грн
-🔥 Газ:
-${gas_u}×(${gas_price}+${gas_delivery})=${gas_total.toFixed(0)}/2= ${(gas_total/2).toFixed(0)} грн
-🚿 Вода:
-${water_u}×${water_t}+${water_sub}=${water_total.toFixed(0)}/2= ${(water_total/2).toFixed(0)} грн
-🏠 ОСББ:
-${osbb.toFixed(0)}/2= ${(osbb/2).toFixed(0)} грн
+⚡ Світло: ${el_day}×${t_day}+${el_night}×${t_night}=${el_total.toFixed(0)}/2=${(el_total/2).toFixed(0)} грн
+🔥 Газ: ${gas_u}×(${gas_price}+${gas_delivery})=${gas_total.toFixed(0)}/2=${(gas_total/2).toFixed(0)} грн
+🚿 Вода: ${water_u}×${water_t}+${water_sub}=${water_total.toFixed(0)}/2=${(water_total/2).toFixed(0)} грн
+🏠 ОСББ: ${osbb.toFixed(0)}/2=${(osbb/2).toFixed(0)} грн
 
 До оплати: ${total_per_person.toFixed(0)} грн`;
 
@@ -318,8 +322,23 @@ function load(){
   });
 }
 
+function setupAutoNext(){
+  const inputs = Array.from(document.querySelectorAll("input"));
+  inputs.forEach((input, index) => {
+    input.addEventListener("keydown", function(e){
+      if(e.key === "Enter"){
+        e.preventDefault();
+        const next = inputs[index + 1];
+        if(next) next.focus();
+        else input.blur();
+      }
+    });
+  });
+}
+
 load();
 renderHistory();
+setupAutoNext();
 
 </script>
 
