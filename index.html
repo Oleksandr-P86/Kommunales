@@ -32,14 +32,16 @@ body {
   box-shadow:0 4px 12px rgba(0,0,0,0.08);
 }
 
-.label { font-size:14px; color:#555; margin-top:8px; }
+.label { font-size:15px; margin-top:8px; }
 
 input {
   width:100%;
-  padding:12px;
+  padding:14px;
   margin-top:4px;
   border-radius:10px;
   border:1px solid #ddd;
+  font-size:18px;
+  font-weight:500;
 }
 
 .row { display:flex; gap:10px; }
@@ -81,64 +83,64 @@ button {
 
 <div class="label">День</div>
 <div class="row">
-<input id="ed_prev" placeholder="було">
-<input id="ed_curr" placeholder="стало">
+<input id="ed_prev" required inputmode="decimal">
+<input id="ed_curr" required inputmode="decimal">
 </div>
 
 <div class="label">Тариф день</div>
-<input id="tariff_day" value="4.32">
+<input id="tariff_day" value="4.32" required inputmode="decimal">
 
 <div class="label">Ніч</div>
 <div class="row">
-<input id="en_prev" placeholder="було">
-<input id="en_curr" placeholder="стало">
+<input id="en_prev" required inputmode="decimal">
+<input id="en_curr" required inputmode="decimal">
 </div>
 
 <div class="label">Тариф ніч</div>
-<input id="tariff_night" value="2.16">
+<input id="tariff_night" value="2.16" required inputmode="decimal">
 </div>
 
 <div class="card">
 <h3>🔥 Газ</h3>
 
 <div class="row">
-<input id="g_prev" placeholder="було">
-<input id="g_curr" placeholder="стало">
+<input id="g_prev" required inputmode="decimal">
+<input id="g_curr" required inputmode="decimal">
 </div>
 
 <div class="label">Газ</div>
-<input id="gas_price" value="8">
+<input id="gas_price" value="8" required inputmode="decimal">
 
 <div class="label">Доставка</div>
-<input id="gas_delivery" value="2.03">
+<input id="gas_delivery" value="2.03" required inputmode="decimal">
 </div>
 
 <div class="card">
 <h3>🚿 Вода</h3>
 
 <div class="row">
-<input id="w_prev" placeholder="було">
-<input id="w_curr" placeholder="стало">
+<input id="w_prev" required inputmode="decimal">
+<input id="w_curr" required inputmode="decimal">
 </div>
 
 <div class="label">Тариф</div>
-<input id="water_tariff" value="26">
+<input id="water_tariff" value="26" required inputmode="decimal">
 
 <div class="label">Абонплата</div>
-<input id="water_sub" value="58">
+<input id="water_sub" value="58" required inputmode="decimal">
 </div>
 
 <div class="card">
 <h3>🏠 ОСББ</h3>
-<input id="osbb">
+<input id="osbb" required inputmode="decimal">
 </div>
 
 <button class="primary" onclick="calc()">Порахувати</button>
 
 <div class="result" id="result">Введи дані</div>
 
-<button class="secondary" onclick="copyForTenants()">📋 Скопіювати для квартирантів</button>
-<button class="secondary" onclick="saveMonth()">💾 Зберегти місяць</button>
+<button class="secondary" onclick="copyForTenants()">📋 Скопіювати</button>
+<button class="secondary" onclick="saveMonth()">💾 Зберегти</button>
 
 <div class="card">
 <h3>📊 Історія</h3>
@@ -153,7 +155,25 @@ function val(id){
   return Number(document.getElementById(id).value || 0);
 }
 
+function validate(){
+  let ok = true;
+  document.querySelectorAll("input").forEach(i=>{
+    if(!i.value){
+      i.style.border = "2px solid red";
+      ok = false;
+    } else {
+      i.style.border = "1px solid #ddd";
+    }
+  });
+  return ok;
+}
+
 function calc(){
+
+  if(!validate()){
+    alert("Заповни всі поля");
+    return;
+  }
 
   const el = (val("ed_curr")-val("ed_prev"))*val("tariff_day") +
              (val("en_curr")-val("en_prev"))*val("tariff_night");
@@ -189,6 +209,8 @@ function copyPrev(){
 
 function copyForTenants(){
 
+  if(!validate()) return;
+
   const now = new Date();
   now.setMonth(now.getMonth() - 1);
 
@@ -221,14 +243,10 @@ function copyForTenants(){
 
   const text = `Комуналка за ${month}:
 
-⚡ Світло: 
-${el_day}×${t_day}+${el_night}×${t_night}=${el_total.toFixed(0)}/2= ${(el_total/2).toFixed(0)} грн
-🔥 Газ: 
-${gas_u}×(${gas_price}+${gas_delivery})=${gas_total.toFixed(0)}/2= ${(gas_total/2).toFixed(0)} грн
-🚿 Вода: 
-${water_u}×${water_t}+${water_sub}=${water_total.toFixed(0)}/2= ${(water_total/2).toFixed(0)} грн
-🏠 ОСББ: 
-${osbb.toFixed(0)}/2= ${(osbb/2).toFixed(0)} грн
+⚡ Світло: ${el_day}×${t_day}+${el_night}×${t_night}=${el_total.toFixed(0)}/2=${(el_total/2).toFixed(0)} грн
+🔥 Газ: ${gas_u}×(${gas_price}+${gas_delivery})=${gas_total.toFixed(0)}/2=${(gas_total/2).toFixed(0)} грн
+🚿 Вода: ${water_u}×${water_t}+${water_sub}=${water_total.toFixed(0)}/2=${(water_total/2).toFixed(0)} грн
+🏠 ОСББ: ${osbb.toFixed(0)}/2=${(osbb/2).toFixed(0)} грн
 
 До оплати: ${total_per_person.toFixed(0)} грн`;
 
@@ -239,10 +257,7 @@ ${osbb.toFixed(0)}/2= ${(osbb/2).toFixed(0)} грн
 function saveMonth(){
 
   const totalEl = document.querySelector(".total");
-  if(!totalEl){ 
-    alert("Спочатку порахуй"); 
-    return; 
-  }
+  if(!totalEl){ alert("Спочатку порахуй"); return; }
 
   const total = parseFloat(totalEl.innerText);
 
@@ -256,16 +271,12 @@ function saveMonth(){
 
   let history = JSON.parse(localStorage.getItem("history") || "[]");
 
-  const existingIndex = history.findIndex(item => item.month === month);
+  const index = history.findIndex(item => item.month === month);
 
-  if(existingIndex !== -1){
-    // 🔁 оновлюємо
-    history[existingIndex].total = total;
-    alert("Оновлено 👍");
+  if(index !== -1){
+    history[index].total = total;
   } else {
-    // ➕ додаємо
     history.unshift({ month, total });
-    alert("Збережено 👍");
   }
 
   localStorage.setItem("history", JSON.stringify(history));
@@ -273,22 +284,17 @@ function saveMonth(){
 }
 
 function renderHistory(){
-
   let history = JSON.parse(localStorage.getItem("history") || "[]");
-
   let html = "";
 
-  history.forEach((item, i) => {
-
-    let diff = "";
-    if(i < history.length-1){
-      let d = item.total - history[i+1].total;
-
-      if(d>0) diff = ` 🔺 +${d.toFixed(0)}`;
-      else if(d<0) diff = ` 🔻 ${d.toFixed(0)}`;
+  history.forEach((item,i)=>{
+    let diff="";
+    if(i<history.length-1){
+      let d=item.total-history[i+1].total;
+      if(d>0) diff=` 🔺+${d.toFixed(0)}`;
+      else if(d<0) diff=` 🔻${d.toFixed(0)}`;
     }
-
-    html += `<div>${item.month}: <b>${item.total.toFixed(0)} грн</b>${diff}</div>`;
+    html+=`<div>${item.month}: <b>${item.total.toFixed(0)} грн</b>${diff}</div>`;
   });
 
   document.getElementById("history").innerHTML = html;
@@ -296,14 +302,14 @@ function renderHistory(){
 
 function save(){
   document.querySelectorAll("input").forEach(i=>{
-    localStorage.setItem(i.id, i.value);
+    localStorage.setItem(i.id,i.value);
   });
 }
 
 function load(){
   document.querySelectorAll("input").forEach(i=>{
     if(localStorage.getItem(i.id)){
-      i.value = localStorage.getItem(i.id);
+      i.value=localStorage.getItem(i.id);
     }
   });
 }
