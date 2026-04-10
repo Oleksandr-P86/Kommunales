@@ -251,10 +251,14 @@ function copyForTenants(){
 
   const text = `Комуналка за ${month}:
 
-⚡ Світло: ${el_day}×${t_day}+${el_night}×${t_night}=${el_total.toFixed(0)}/2=${(el_total/2).toFixed(0)} грн
-🔥 Газ: ${gas_u}×(${gas_price}+${gas_delivery})=${gas_total.toFixed(0)}/2=${(gas_total/2).toFixed(0)} грн
-🚿 Вода: ${water_u}×${water_t}+${water_sub}=${water_total.toFixed(0)}/2=${(water_total/2).toFixed(0)} грн
-🏠 ОСББ: ${osbb.toFixed(0)}/2=${(osbb/2).toFixed(0)} грн
+⚡ Світло:
+${el_day}×${t_day}+${el_night}×${t_night}=${el_total.toFixed(0)}/2= ${(el_total/2).toFixed(0)} грн
+🔥 Газ:
+${gas_u}×(${gas_price}+${gas_delivery})=${gas_total.toFixed(0)}/2= ${(gas_total/2).toFixed(0)} грн
+🚿 Вода:
+${water_u}×${water_t}+${water_sub}=${water_total.toFixed(0)}/2= ${(water_total/2).toFixed(0)} грн
+🏠 ОСББ:
+${osbb.toFixed(0)}/2= ${(osbb/2).toFixed(0)} грн
 
 До оплати: ${total_per_person.toFixed(0)} грн`;
 
