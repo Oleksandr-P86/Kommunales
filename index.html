@@ -4,27 +4,18 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<!-- PWA / iOS -->
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Комуналка">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
-
-<!-- ІКОНКА -->
-<link rel="apple-touch-icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAA...REPLACE_WITH_BASE64...">
 
 <title>Комуналка</title>
 
 <style>
-
-* {
-  box-sizing: border-box;
-}
+* { box-sizing: border-box; }
 
 body {
   margin:0;
-  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-  background: #eef2f7;
-  color:#111;
+  font-family: -apple-system, sans-serif;
+  background:#eef2f7;
 }
 
 .container {
@@ -33,50 +24,32 @@ body {
   padding:15px;
 }
 
-h1 {
-  text-align:center;
-}
-
 .card {
   background:white;
   border-radius:16px;
   padding:15px;
   margin-bottom:12px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  box-shadow:0 4px 12px rgba(0,0,0,0.08);
 }
 
-.label {
-  font-size:13px;
-  color:#555;
-  margin-top:8px;
-}
+.label { font-size:13px; color:#555; margin-top:8px; }
 
 input {
   width:100%;
-  max-width:100%;
   padding:12px;
   margin-top:4px;
   border-radius:10px;
   border:1px solid #ddd;
-  font-size:16px;
 }
 
-.row {
-  display:flex;
-  gap:10px;
-}
-
-.row input {
-  flex:1;
-  min-width:0;
-}
+.row { display:flex; gap:10px; }
+.row input { flex:1; }
 
 button {
   width:100%;
   padding:14px;
   border:none;
   border-radius:12px;
-  font-size:16px;
   margin-top:10px;
 }
 
@@ -89,14 +62,9 @@ button {
   padding:20px;
   border-radius:16px;
   text-align:center;
-  margin-top:15px;
 }
 
-.total {
-  font-size:32px;
-  font-weight:bold;
-}
-
+.total { font-size:28px; font-weight:bold; }
 </style>
 </head>
 
@@ -104,72 +72,64 @@ button {
 
 <div class="container">
 
-<h1>Комуналка</h1>
+<h2>Комуналка</h2>
 
 <button class="secondary" onclick="copyPrev()">📥 Підставити попередні</button>
 
-<!-- ⚡ Світло -->
 <div class="card">
 <h3>⚡ Світло</h3>
 
-<div class="label">День (показники, кВт·год)</div>
+<div class="label">День</div>
 <div class="row">
 <input id="ed_prev" placeholder="було">
 <input id="ed_curr" placeholder="стало">
 </div>
 
-<div class="label">Тариф ДЕНЬ (грн/кВт·год)</div>
+<div class="label">Тариф день</div>
 <input id="tariff_day" value="4.32">
 
-<div class="label">Ніч (показники, кВт·год)</div>
+<div class="label">Ніч</div>
 <div class="row">
 <input id="en_prev" placeholder="було">
 <input id="en_curr" placeholder="стало">
 </div>
 
-<div class="label">Тариф НІЧ (грн/кВт·год)</div>
+<div class="label">Тариф ніч</div>
 <input id="tariff_night" value="2.16">
 </div>
 
-<!-- 🔥 Газ -->
 <div class="card">
 <h3>🔥 Газ</h3>
 
-<div class="label">Показники (м³)</div>
 <div class="row">
 <input id="g_prev" placeholder="було">
 <input id="g_curr" placeholder="стало">
 </div>
 
-<div class="label">Тариф за ГАЗ (грн/м³)</div>
-<input id="gas_price" value="8">
+<div class="label">Газ</div>
+<input id="gas_price" value="7.96">
 
-<div class="label">Тариф за ДОСТАВКУ (грн/м³)</div>
+<div class="label">Доставка</div>
 <input id="gas_delivery" value="2.03">
 </div>
 
-<!-- 🚿 Вода -->
 <div class="card">
 <h3>🚿 Вода</h3>
 
-<div class="label">Показники (м³)</div>
 <div class="row">
 <input id="w_prev" placeholder="було">
 <input id="w_curr" placeholder="стало">
 </div>
 
-<div class="label">Тариф ВОДА + КАНАЛІЗАЦІЯ (грн/м³)</div>
-<input id="water_tariff" value="26">
+<div class="label">Тариф</div>
+<input id="water_tariff" value="40.43">
 
-<div class="label">АБОНПЛАТА (грн/місяць)</div>
-<input id="water_sub" value="58">
+<div class="label">Абонплата</div>
+<input id="water_sub" value="30">
 </div>
 
-<!-- 🏠 ОСББ -->
 <div class="card">
 <h3>🏠 ОСББ</h3>
-
-<div class="label">Фіксована сума за місяць (грн)</div>
 <input id="osbb">
 </div>
 
@@ -177,12 +137,46 @@ button {
 
 <div class="result" id="result">Введи дані</div>
 
+<button class="secondary" onclick="copyForTenants()">📋 Скопіювати для квартирантів</button>
+<button class="secondary" onclick="saveMonth()">💾 Зберегти місяць</button>
+
+<div class="card">
+<h3>📊 Історія</h3>
+<div id="history"></div>
+</div>
+
 </div>
 
 <script>
 
 function val(id){
   return Number(document.getElementById(id).value || 0);
+}
+
+function calc(){
+
+  const el = (val("ed_curr")-val("ed_prev"))*val("tariff_day") +
+             (val("en_curr")-val("en_prev"))*val("tariff_night");
+
+  const gas = (val("g_curr")-val("g_prev")) *
+              (val("gas_price")+val("gas_delivery"));
+
+  const water = (val("w_curr")-val("w_prev")) *
+                val("water_tariff") + val("water_sub");
+
+  const osbb = val("osbb");
+
+  const total = el + gas + water + osbb;
+
+  result.innerHTML = `
+    ⚡ ${el.toFixed(0)} грн<br>
+    🔥 ${gas.toFixed(0)} грн<br>
+    🚿 ${water.toFixed(0)} грн<br>
+    🏠 ${osbb.toFixed(0)} грн<br><br>
+    <div class="total">${total.toFixed(0)} грн</div>
+  `;
+
+  save();
 }
 
 function copyPrev(){
@@ -193,33 +187,74 @@ function copyPrev(){
   save();
 }
 
-function calc(){
+function copyForTenants(){
 
-  const el =
-    (val("ed_curr")-val("ed_prev")) * val("tariff_day") +
-    (val("en_curr")-val("en_prev")) * val("tariff_night");
+  const el = (val("ed_curr")-val("ed_prev"))*val("tariff_day") +
+             (val("en_curr")-val("en_prev"))*val("tariff_night");
 
-  const gas =
-    (val("g_curr")-val("g_prev")) *
-    (val("gas_price")+val("gas_delivery"));
+  const gas = (val("g_curr")-val("g_prev")) *
+              (val("gas_price")+val("gas_delivery"));
 
-  const water =
-    (val("w_curr")-val("w_prev")) *
-    val("water_tariff") + val("water_sub");
+  const water = (val("w_curr")-val("w_prev")) *
+                val("water_tariff") + val("water_sub");
 
   const osbb = val("osbb");
 
   const total = el + gas + water + osbb;
+  const perPerson = total / 2;
 
-  result.innerHTML = `
-    ⚡ ${el.toFixed(2)} грн<br>
-    🔥 ${gas.toFixed(2)} грн<br>
-    🚿 ${water.toFixed(2)} грн<br>
-    🏠 ${osbb.toFixed(2)} грн<br><br>
-    <div class="total">${total.toFixed(2)} грн</div>
-  `;
+  const text = `Комунальні платежі:
 
-  save();
+⚡ Світло: ${el.toFixed(0)} грн
+🔥 Газ: ${gas.toFixed(0)} грн
+🚿 Вода: ${water.toFixed(0)} грн
+🏠 ОСББ: ${osbb.toFixed(0)} грн
+
+Загалом: ${total.toFixed(0)} грн
+З кожного: ${perPerson.toFixed(0)} грн`;
+
+  navigator.clipboard.writeText(text);
+  alert("Скопійовано");
+}
+
+function saveMonth(){
+
+  const totalEl = document.querySelector(".total");
+  if(!totalEl){ alert("Спочатку порахуй"); return; }
+
+  const total = parseFloat(totalEl.innerText);
+
+  const now = new Date();
+  const month = now.toLocaleString("uk-UA", { month: "long", year: "numeric" });
+
+  let history = JSON.parse(localStorage.getItem("history") || "[]");
+
+  history.unshift({ month, total });
+
+  localStorage.setItem("history", JSON.stringify(history));
+  renderHistory();
+}
+
+function renderHistory(){
+
+  let history = JSON.parse(localStorage.getItem("history") || "[]");
+
+  let html = "";
+
+  history.forEach((item, i) => {
+
+    let diff = "";
+    if(i < history.length-1){
+      let d = item.total - history[i+1].total;
+
+      if(d>0) diff = ` 🔺 +${d.toFixed(0)}`;
+      else if(d<0) diff = ` 🔻 ${d.toFixed(0)}`;
+    }
+
+    html += `<div>${item.month}: <b>${item.total.toFixed(0)} грн</b>${diff}</div>`;
+  });
+
+  document.getElementById("history").innerHTML = html;
 }
 
 function save(){
@@ -237,6 +272,7 @@ function load(){
 }
 
 load();
+renderHistory();
 
 </script>
 
