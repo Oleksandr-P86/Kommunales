@@ -189,32 +189,50 @@ function copyPrev(){
 
 function copyForTenants(){
 
-  const el = (val("ed_curr")-val("ed_prev"))*val("tariff_day") +
-             (val("en_curr")-val("en_prev"))*val("tariff_night");
+  const now = new Date();
+  const month = now.toLocaleString("uk-UA", { month: "long", year: "numeric" });
 
-  const gas = (val("g_curr")-val("g_prev")) *
-              (val("gas_price")+val("gas_delivery"));
+  const el_day = val("ed_curr") - val("ed_prev");
+  const el_night = val("en_curr") - val("en_prev");
+  const gas_u = val("g_curr") - val("g_prev");
+  const water_u = val("w_curr") - val("w_prev");
 
-  const water = (val("w_curr")-val("w_prev")) *
-                val("water_tariff") + val("water_sub");
+  const t_day = val("tariff_day");
+  const t_night = val("tariff_night");
 
+  const gas_price = val("gas_price");
+  const gas_delivery = val("gas_delivery");
+  const gas_total_tariff = gas_price + gas_delivery;
+
+  const water_t = val("water_tariff");
+  const water_sub = val("water_sub");
+
+  const el_total = el_day * t_day + el_night * t_night;
+  const gas_total = gas_u * gas_total_tariff;
+  const water_total = water_u * water_t + water_sub;
   const osbb = val("osbb");
 
-  const total = el + gas + water + osbb;
-  const perPerson = total / 2;
+  const el_half = el_total / 2;
+  const gas_half = gas_total / 2;
+  const water_half = water_total / 2;
+  const osbb_half = osbb / 2;
 
-  const text = `Комунальні платежі:
+  const total_per_person = el_half + gas_half + water_half + osbb_half;
 
-⚡ Світло: ${el.toFixed(0)} грн
-🔥 Газ: ${gas.toFixed(0)} грн
-🚿 Вода: ${water.toFixed(0)} грн
-🏠 ОСББ: ${osbb.toFixed(0)} грн
+  const text = `Комуналка (${month}):
 
-Загалом: ${total.toFixed(0)} грн
-З кожного: ${perPerson.toFixed(0)} грн`;
+⚡ Світло:
+${el_day}×${t_day} + ${el_night}×${t_night} = ${el_total.toFixed(0)} /2 = ${el_half.toFixed(0)} грн
+🔥 Газ (газ ${gas_price} + доставка ${gas_delivery}):
+${gas_u}×${gas_total_tariff.toFixed(2)} = ${gas_total.toFixed(0)} /2 = ${gas_half.toFixed(0)} грн
+🚿 Вода:
+${water_u}×${water_t} + ${water_sub} = ${water_total.toFixed(0)} /2 = ${water_half.toFixed(0)} грн
+🏠 ОСББ:
+${osbb.toFixed(0)} /2 = ${osbb_half.toFixed(0)} грн
+До оплати: ${total_per_person.toFixed(0)} грн`;
 
   navigator.clipboard.writeText(text);
-  alert("Скопійовано");
+  alert("Скопійовано 👍");
 }
 
 function saveMonth(){
